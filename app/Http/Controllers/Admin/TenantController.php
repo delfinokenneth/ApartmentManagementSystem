@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateTenantRequest;
 use App\Models\Tenant;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TenantController extends Controller
 {
@@ -38,7 +39,20 @@ class TenantController extends Controller
      */
     public function store(StoreTenantRequest $request)
     {
-        //
+        $imageFile = null;
+
+        // Check if a file was uploaded
+        if ($request->hasFile('tenant_image') && $request->file('tenant_image')->isValid()) {
+            // Get the file from the request
+            $imageFile = $request->file('tenant_image');
+
+            // Generate a unique file name based on current timestamp
+            $fileName = time() . '.' . $imageFile->getClientOriginalExtension();
+
+            // Store the file in the 'images' directory in the public disk
+            $filePath = $imageFile->storeAs('images', $fileName, 'public');
+        }
+
         if ($request->validated()) {
             Tenant::create([
                 'tenant_name' => $request->tenant_name,
@@ -50,17 +64,15 @@ class TenantController extends Controller
                 'tenant_employer' => $request->tenant_employer,
                 'tenant_emergency_contact' => $request->tenant_emergency_contact,
                 'tenant_facebook_link' => $request->tenant_facebook_link,
-                'tenant_image' => $request->tenant_image,
+                'tenant_image' => $imageFile ? Storage::url($filePath) : null,
                 'tenant_note' => $request->tenant_note,
                 'tenant_room_id' => $request->tenant_room_id,
-                'tenant_account_enable' => $request->tenant_account_enable,
-                'tenant_account_bill_notif' => $request->tenant_account_bill_notif,
-                'tenant_account_password' => $request->tenant_account_password
-
-
+                'tenant_account_enable' => false,
+                'tenant_account_bill_notif' => false,
+                'tenant_account_password' => ''
             ]);
 
-            return redirect()->route('admin.tenant.index')->with([
+            return redirect()->route('admin.tenants.index')->with([
                 'success' => 'Tenant added successfully'
             ]);
         }

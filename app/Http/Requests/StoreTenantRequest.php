@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class StoreTenantRequest extends FormRequest
 {
@@ -22,21 +23,18 @@ class StoreTenantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tenant_name' => 'required|string|max:255',
-            'tenant_contact' => 'required|string|unique:tenants,tenant_contact|max:20',
+            'tenant_name' => 'required|string|unique:tenants,tenant_name|max:255',
+            'tenant_contact' => 'required|string|unique:tenants,tenant_contact|regex:/^\+?[0-9]{10,15}$/',
             'tenant_email' => 'required|string|email|unique:tenants,tenant_email|max:255',
-            'tenant_marital_status' => 'required|string|in:single,married,divorced,widowed',
-            'tenant_birth_date' => 'required|date|before:today',
-            'tenant_address' => 'required|string|max:500',
+            'tenant_marital_status' => 'required|string|in:Single,Married,Divorced,Widowed',
+            'tenant_birth_date' => 'required|date|before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
+            'tenant_address' => 'required|string|max:500',   
             'tenant_employer' => 'nullable|string|max:255',
-            'tenant_emergency_contact' => 'required|string|max:20',
+            'tenant_emergency_contact' => 'required|string|max:50',
             'tenant_facebook_link' => 'nullable|string|url|max:255',
-            'tenant_image' => 'nullable|string|max:255', // Assuming it's a path or URL
-            'tenant_note' => 'nullable|string',
-            'tenant_room_id' => 'required|string|max:50',
-            'tenant_account_enable' => 'required|boolean',
-            'tenant_account_bill_notif' => 'required|boolean',
-            'tenant_account_password' => 'required|string|min:8|max:255' // Ensure password is securely hashed before storing
+            'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'tenant_note' => 'nullable|string|max:1000',
+            'tenant_room_id' => 'required|integer|exists:rooms,id'
         ];
     }
 }
