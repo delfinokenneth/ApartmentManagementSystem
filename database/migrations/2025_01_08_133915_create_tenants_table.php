@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('tenant_employer');
             $table->string('tenant_emergency_contact');
             $table->string('tenant_facebook_link');
-            $table->string('tenant_image'); // String to store the image path or URL
-            $table->text('tenant_note'); // Long text for additional notes
+            $table->string('tenant_image')->nullable(); // String to store the image path or URL
+            $table->text('tenant_note')->nullable(); // Long text for additional notes
             $table->string('tenant_room_id'); // String for room ID, can be alphanumeric
             $table->boolean('tenant_account_enable')->default(false); // Default to false
             $table->boolean('tenant_account_bill_notif')->default(false); // Default to false
