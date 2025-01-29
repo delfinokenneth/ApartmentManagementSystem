@@ -33,8 +33,8 @@ class StoreTenantRequest extends FormRequest
             'tenant_emergency_contact' => 'required|string|max:50',
             'tenant_facebook_link' => 'nullable|string|url|max:255',
             'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'tenant_room_id' => 'required|integer|exists:rooms,id|unique:tenants,tenant_room_id',
             'tenant_note' => 'nullable|string|max:1000',
-            'tenant_room_id' => 'required|integer|exists:rooms,id'
         ];
     }
 }
