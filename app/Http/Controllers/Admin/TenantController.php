@@ -17,8 +17,8 @@ class TenantController extends Controller
      */
     public function index()
     {
-        //
-        $tenants = Tenant::latest()->get();
+        $tenants = Tenant::with('room')->get();
+
         return view('admin.tenants.index')->with([
             'tenants' => $tenants
         ]);

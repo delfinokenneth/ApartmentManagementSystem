@@ -9,7 +9,7 @@
         <div class="row">
             @include('admin.layouts.sidebar')
         </div>
-       
+
         <main id="main" class="main">
 
         <div class="pagetitle">
@@ -40,24 +40,32 @@
                   <table class="table datatable">
                     <thead>
                       <tr>
+                        <th>Image</th>
                         <th> <b>Name</b> </th>
-                        <th>Room Name</th>
+                        <th>Room</th>
                         <th> </th>
                       </tr>
                     </thead>
                     <tbody>
                       @foreach ($tenants as $tenant)
                       <tr>
-                        <td>{{$tenant->tenant_name}}</td>
-                        <td>{{$tenant->tenant_room_id}}</td>
                         <td>
-                          <a href="{{route('admin.tenants.edit', $room)}}" class="btn btn-sm btn-warning">
-                            <i class="fas fa-edit"></i>
+                          @if($tenant->tenant_image)
+                          <img src="{{ asset($tenant->tenant_image) }}" style="width: 80px; height: 80px;   border-radius: 50%;">
+                          @else
+                          <img src="{{ asset('storage/images/user.png') }}" alt="test" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
+                          @endif
+                        </td>
+                        <td>{{$tenant->tenant_name}}</td>
+                        <td> {{ $tenant->room ? $tenant->room->room_name : 'No Room Assigned' }}</td>
+                        <td>
+                          <a href="{{route('admin.tenants.edit', $tenant)}}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-eye"></i>
                           </a>
-                          <a onclick="deleteItem({{$tenants->id}})" href="#" class="btn btn-sm btn-danger">
+                          <a onclick="deleteItem({{$tenant->id}})" href="#" class="btn btn-sm btn-danger">
                             <i class="fas fa-trash"></i>
                           </a>
-                          <form id="{{1}}" action="{{route('admin.tenants.destroy', $room)}}" method="post">
+                          <form id="{{1}}" action="{{route('admin.tenants.destroy', $tenant)}}" method="post">
                             @csrf
                             @method('DELETE')
                           </form>
