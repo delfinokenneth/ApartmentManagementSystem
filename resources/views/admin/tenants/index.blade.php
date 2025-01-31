@@ -51,15 +51,15 @@
                       <tr>
                         <td>
                           @if($tenant->tenant_image)
-                          <img src="{{ asset($tenant->tenant_image) }}" style="width: 80px; height: 80px;   border-radius: 50%;">
+                            <img src="{{ asset($tenant->tenant_image) }}" style="width: 80px; height: 80px;   border-radius: 50%;">
                           @else
-                          <img src="{{ asset('storage/images/user.png') }}" alt="test" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
+                            <img src="{{ asset('storage/images/user.png') }}" alt="test" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
                           @endif
                         </td>
                         <td>{{$tenant->tenant_name}}</td>
                         <td> {{ $tenant->room ? $tenant->room->room_name : 'No Room Assigned' }}</td>
                         <td>
-                          <a href="{{route('admin.tenants.edit', $tenant)}}" class="btn btn-sm btn-primary">
+                          <a href="{{route('admin.tenants.show', $tenant)}}" class="btn btn-sm btn-primary">
                             <i class="fas fa-eye"></i>
                           </a>
                           <a onclick="deleteItem({{$tenant->id}})" href="#" class="btn btn-sm btn-danger">

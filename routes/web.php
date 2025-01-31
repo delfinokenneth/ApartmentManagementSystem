@@ -56,6 +56,7 @@ Route::prefix('admin')->group(function() {
             'index' => 'admin.tenants.index',
             'create' => 'admin.tenants.create',
             'store' => 'admin.tenants.store',
+            'show' => 'admin.tenants.show',
             'edit' => 'admin.tenants.edit',
             'update' => 'admin.tenants.update',
             'destroy' => 'admin.tenants.destroy'
