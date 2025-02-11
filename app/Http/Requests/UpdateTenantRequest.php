@@ -23,6 +23,7 @@ class UpdateTenantRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'tenant_room_id' => ['required','integer','exists:rooms,id',Rule::unique('tenants', 'tenant_room_id')->ignore($this->route('tenant')->id ?? null)],
             'tenant_name' => ['required', 'string', 'max:255', Rule::unique('tenants')->ignore($this->route('tenant')->id ?? null)],
             'tenant_contact' => ['required','string','regex:/^\+?[0-9]{10,15}$/',Rule::unique('tenants', 'tenant_contact')->ignore($this->route('tenant')->id ?? null)],
             'tenant_email' => ['required','string','email','max:255',Rule::unique('tenants', 'tenant_email')->ignore($this->route('tenant')->id ?? null)],        
@@ -32,6 +33,9 @@ class UpdateTenantRequest extends FormRequest
             'tenant_employer' => 'nullable|string|max:255',
             'tenant_emergency_contact' => 'required|string|max:50',
             'tenant_facebook_link' => 'nullable|string|url|max:255',
+            'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_image' => 'nullable|in:0,1',
+            'tenant_note' => 'nullable|string|max:1000',
         ];
     }
 }
