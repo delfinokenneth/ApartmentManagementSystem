@@ -29,7 +29,7 @@
           <div class="card">
             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-              <img src="{{ asset($tenant->tenant_image ? $tenant->tenant_image : 'storage/images/user.png') }}" alt="Profile" class="rounded-circle">
+              <img src="{{ asset($tenant->tenant_image ? $tenant->tenant_image : 'storage/images/default.png') }}" alt="Profile" class="rounded-circle">
               <h2>{{$tenant->tenant_name}}</h2>
               <h3>{{$tenant->room->room_name}}</h3>
               <div class="social-links mt-2">
@@ -109,23 +109,56 @@
                     <div class="col-lg-9 col-md-8">{{$tenant->tenant_emergency_contact}}</div>
                   </div>
 
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Note </div>
+                    <div class="col-lg-9 col-md-8">{{$tenant->tenant_note}}</div>
+                  </div>
+
                 </div>
 
                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                   <!-- Profile Edit Form -->
-                  <form action="{{route('admin.tenants.update', $tenant)}}" method="post">
+                  <form action="{{route('admin.tenants.updateProfile', $tenant)}}" method="post" enctype="multipart/form-data">
                     @csrf
                     @method("PUT")
 
                     <div class="row mb-3">
                       <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Tenant Image</label>
                       <div class="col-md-8 col-lg-9">
-                        <img src="{{asset($tenant->tenant_image)}}" alt="Profile">
+                        <img id="imagePreview" name="imagePreview" src="{{asset($tenant->tenant_image)}}" alt="Profile" style="max-width: 150px; display: {{ $tenant->tenant_image ? 'block' : 'none' }};">
                         <div class="pt-2">
-                          <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
-                          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                          <input type="file" name="tenant_image" id="tenant_image" accept="image/*" onchange="previewImage(event)" class="d-none">
+                          <input type="hidden" name="remove_image" id="remove_image" value="0"> 
+                          
+                          <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image" onclick="document.getElementById('tenant_image').click()"><i class="bi bi-upload"></i></a>
+                          <a href="#" id="btn_remove_preview" class="btn btn-danger btn-sm" title="Remove profile image" onclick="clearImage()" style="{{ $tenant->tenant_image ? '' : 'display:none;' }}">
+                            <i class="bi bi-trash"></i>
+                          </a>
+
                         </div>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Room</label>
+                      <div class="col-md-8 col-lg-9">
+                          <select class="form-select @error('tenant_room_id') is-invalid @enderror" 
+                                  aria-label="Select" 
+                                  name="tenant_room_id" 
+                                  id="tenant_room_id" 
+                                  onChange="updateRate()">
+                              <option value="" disabled>Select Room</option>
+                              @foreach($roomData as $room)
+                                  <option value="{{ $room->id }}" 
+                                      {{ (old('tenant_room_id', $tenant->tenant_room_id) == $room->id) ? 'selected' : '' }}>
+                                      {{ $room->room_name }}
+                                  </option>
+                              @endforeach
+                          </select>
+                          @error('tenant_room_id')
+                              <span class="invalid-feedback">{{ $message }}</span>
+                          @enderror
                       </div>
                     </div>
 
@@ -147,13 +180,13 @@
                     <div class="row mb-3">
                       <label for="tenant_contact" class="col-md-4 col-lg-3 col-form-label">Contact #</label>
                       <div class="col-md-8 col-lg-9">
-                        <input type="text" name="tenant_contact" id="tenant_contact"
+                        <input type="number" name="tenant_contact" id="tenant_contact"
                           placeholder="Contact Number"
                           value="{{old('tenant_contact',$tenant->tenant_contact)}}"
                           class="form-control @error('tenant_contact') is-invalid @enderror">
                       </div>
                       @error('tenant_contact')
-                        <span class="invalid-feedback">
+                      <span class="invalid-feedback d-block">
                           {{$message}}
                         </span>
                       @enderror
@@ -167,6 +200,11 @@
                         value="{{old('tenant_email',$tenant->tenant_email)}}"
                         class="form-control @error('tenant_email') is-invalid @enderror">
                       </div>
+                      @error('tenant_email')
+                      <span class="invalid-feedback d-block">
+                          {{$message}}
+                        </span>
+                      @enderror
                     </div>
 
                     <div class="row mb-3">
@@ -191,7 +229,7 @@
                               class="form-control @error('tenant_birth_date') is-invalid @enderror">
                         </div>
                             @error('tenant_birth_date')
-                              <span class="invalid-feedback">
+                              <span class="invalid-feedback d-block">
                                 {{$message}}
                               </span>
                             @enderror
@@ -207,7 +245,7 @@
                           class="form-control @error('tenant_address') is-invalid @enderror">
                       </div>
                       @error('tenant_address')
-                        <span class="invalid-feedback">
+                        <span class="invalid-feedback d-block">
                           {{$message}}
                         </span>
                       @enderror
@@ -222,7 +260,7 @@
                           class="form-control @error('tenant_employer') is-invalid @enderror">
                       </div>
                       @error('tenant_employer')
-                        <span class="invalid-feedback">
+                        <span class="invalid-feedback d-block">
                           {{$message}}
                         </span>
                       @enderror
@@ -237,7 +275,7 @@
                           class="form-control @error('tenant_emergency_contact') is-invalid @enderror">
                       </div>
                       @error('tenant_emergency_contact')
-                        <span class="invalid-feedback">
+                        <span class="invalid-feedback d-block">
                           {{$message}}
                         </span>
                       @enderror
@@ -252,11 +290,27 @@
                           class="form-control @error('tenant_facebook_link') is-invalid @enderror">
                       </div>
                       @error('tenant_facebook_link')
-                        <span class="invalid-feedback">
+                        <span class="invalid-feedback d-block">
                           {{$message}}
                         </span>
                       @enderror
                     </div>
+
+                    <div class="row mb-3">
+                      <label for="tenant_note" class="col-md-4 col-lg-3 col-form-label">Note</label>
+                      <div class="col-md-8 col-lg-9">
+                        <textarea class="form-control @error('tenant_note') is-invalid @enderror"
+                          name="tenant_note"
+                          id="tenant_note"
+                          style="height: 100px;">{{ old('tenant_note', $tenant->tenant_note) }}</textarea>
+                      </div>
+                      @error('tenant_note')
+                        <span class="invalid-feedback d-block">
+                          {{$message}}
+                        </span>
+                      @enderror
+                    </div>
+
 
                     <div class="text-center">
                       <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -268,25 +322,35 @@
                 <div class="tab-pane fade pt-3" id="profile-settings">
 
                   <!-- Settings Form -->
-                  <form>
+                  <form action="{{route('admin.tenants.updateSetting', $tenant)}}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    @method("PUT")
 
-                    <div class="row mb-3">
-                      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Account & Billing</label>
-                      <div class="col-md-8 col-lg-9">
+                  <div class="row mb-3">
+                    <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Account & Billing</label>
+                    <div class="col-md-8 col-lg-9">
+                        <!-- Account Enabled -->
                         <div class="form-check">
-                          <input class="form-check-input" type="checkbox" id="changesMade" checked>
-                          <label class="form-check-label" for="changesMade">
-                            Enable Account
-                          </label>
+                            <input type="hidden" name="tenant_account_enable" value="0"> 
+                            <input class="form-check-input" type="checkbox" id="tenant_account_enable" name="tenant_account_enable" value="1"
+                                {{ old('tenant_account_enable', $tenant->tenant_account_enable) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="tenant_account_enable">
+                                Enable Account
+                            </label>
                         </div>
+
+                        <!-- Billing Notification -->
                         <div class="form-check">
-                          <input class="form-check-input" type="checkbox" id="newProducts" checked>
-                          <label class="form-check-label" for="newProducts">
-                            Billing Notification
-                          </label>
+                            <input type="hidden" name="tenant_account_bill_notif" value="0"> 
+                            <input class="form-check-input" type="checkbox" id="tenant_account_bill_notif" name="tenant_account_bill_notif" value="1"
+                                {{ old('tenant_account_bill_notif', $tenant->tenant_account_bill_notif) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="tenant_account_bill_notif">
+                                Billing Notification
+                            </label>
                         </div>
-                      </div>
                     </div>
+                  </div>
+
 
                     <div class="text-center">
                       <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -339,3 +403,58 @@
     </main>
     </div>
 @endsection
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      // Check if there are validation errors
+      let hasErrors = document.querySelector(".is-invalid"); // Adjust this selector based on your validation feedback elements
+
+      if (hasErrors) {
+          // If there are errors, stay on the last active tab
+          let activeTab = localStorage.getItem("activeTab");
+          if (activeTab) {
+              let tabElement = document.querySelector(`[data-bs-target="${activeTab}"]`);
+              if (tabElement) {
+                  new bootstrap.Tab(tabElement).show();
+              }
+          }
+      } else {
+          // No errors? Reset to Overview
+          new bootstrap.Tab(document.querySelector('[data-bs-target="#profile-overview"]')).show();
+          localStorage.removeItem("activeTab"); // Clear saved tab
+      }
+
+      // Store the active tab when clicked
+      document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+          tab.addEventListener("click", function () {
+              localStorage.setItem("activeTab", this.getAttribute("data-bs-target"));
+          });
+      });
+  });
+
+function previewImage(event) {
+    const reader = new FileReader();
+    const output = document.getElementById('imagePreview');
+    const removeBtn = document.getElementById('btn_remove_preview');
+
+    reader.onload = function() {
+        output.src = reader.result;
+        output.style.display = 'block';
+        removeBtn.style.display = 'inline-block';
+        document.getElementById('remove_image').value = "0"; // Reset removal flag
+};
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+
+function clearImage() {
+    document.getElementById('imagePreview').style.display = "none"; // Hide image
+    document.getElementById('btn_remove_preview').style.display = "none"; // Hide remove button
+    document.getElementById('remove_image').value = "1"; // Set removal flag
+    document.getElementById('tenant_image').value = ""; // Clear file input
+}
+
+
+</script>
