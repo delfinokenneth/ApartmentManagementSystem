@@ -58,10 +58,13 @@ Route::prefix('admin')->group(function() {
             'store' => 'admin.tenants.store',
             'show' => 'admin.tenants.show',
             'edit' => 'admin.tenants.edit',
-            'update' => 'admin.tenants.update',
             'destroy' => 'admin.tenants.destroy'
         ]
     ]);
+
+// Separate update routes for Edit Profile and Edit Account
+Route::put('tenants/{tenant}/profile', [TenantController::class, 'updateProfile'])->name('admin.tenants.updateProfile');
+Route::put('tenants/{tenant}/account', [TenantController::class, 'updateSetting'])->name('admin.tenants.updateSetting');
 
     //reviews routes
     Route::get('reviews', [ReviewController::class, 'index'])->name('admin.reviews.index');
