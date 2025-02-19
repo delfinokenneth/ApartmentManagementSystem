@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTenantRequest;
-use App\Http\Requests\UpdateTenantRequest;
+use App\Http\Requests\UpdateTenantProfileRequest;
+use App\Http\Requests\UpdateTenantSettingRequest;
 use App\Models\Tenant;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -83,8 +84,12 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        //
-        abort(404);
+        $tenants = Tenant::with('room')->get();
+        $roomData = Room::all(); // Fetch all rooms from the rooms table
+        return view('admin.tenants.show')->with([
+            'tenant' => $tenant,
+            'roomData' => $roomData
+        ]);
     }
 
     /**
@@ -101,9 +106,39 @@ class TenantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTenantRequest $request, Tenant $tenant)
+    public function updateProfile(UpdateTenantProfileRequest $request, Tenant $tenant)
     {
-        //
+        $imageFile = null;
+        $filePath = null;
+        
+        // Retain existing image by default
+        $tenantImage = $tenant->tenant_image;
+    
+        // Check if a file was uploaded
+        if ($request->hasFile('tenant_image') && $request->file('tenant_image')->isValid()) {
+            // Delete old image if it exists
+            if ($tenant->tenant_image) {
+                Storage::delete(str_replace('/storage/', 'public/', $tenant->tenant_image));
+            }
+            // Get the file from the request
+            $imageFile = $request->file('tenant_image');
+            // Generate a unique file name based on current timestamp
+            $fileName = time() . '.' . $imageFile->getClientOriginalExtension();
+            // Store the file in the 'images' directory in the public disk
+            $filePath = $imageFile->storeAs('images', $fileName, 'public');
+            // Store new image path
+            $tenantImage = Storage::url($filePath);
+        }
+
+    
+        // Check if the remove_image input is set to "1"
+        if ($request->remove_image == "1") {
+            if ($tenant->tenant_image) {
+                Storage::delete(str_replace('/storage/', 'public/', $tenant->tenant_image));
+            }
+            $tenantImage = null;
+        }
+    
         if ($request->validated()) {
             $tenant->update([
                 'tenant_name' => $request->tenant_name,
@@ -115,20 +150,33 @@ class TenantController extends Controller
                 'tenant_employer' => $request->tenant_employer,
                 'tenant_emergency_contact' => $request->tenant_emergency_contact,
                 'tenant_facebook_link' => $request->tenant_facebook_link,
-                'tenant_image' => $request->tenant_image,
+                'tenant_image' => $tenantImage,
                 'tenant_note' => $request->tenant_note,
                 'tenant_room_id' => $request->tenant_room_id,
-                'tenant_account_enable' => $request->tenant_account_enable,
-                'tenant_account_bill_notif' => $request->tenant_account_bill_notif,
-                'tenant_account_password' => $request->tenant_account_password
-
-
+                'tenant_account_enable' => true,
+                'tenant_account_bill_notif' => false,
+                'tenant_account_password' => ''
             ]);
 
-            return redirect()->route('admin.tenant.index')->with([
-                'success' => 'Tenant updated successfully'
+        return redirect()->route('admin.tenants.show', $tenant->id)->with([
+            'success' => 'Tenant updated successfully'
+        ]);
+    }
+
+    }
+
+    public function updateSetting(UpdateTenantSettingRequest $request, Tenant $tenant)
+    {
+        if ($request->validated()) {
+            $tenant->update([
+                'tenant_account_enable' => $request->tenant_account_enable,
+                'tenant_account_bill_notif' => $request->tenant_account_bill_notif
             ]);
         }
+
+        return redirect()->route('admin.tenants.show', $tenant->id)->with([
+            'success' => 'Tenant updated successfully'
+        ]);
     }
 
     /**
