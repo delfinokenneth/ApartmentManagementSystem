@@ -26,7 +26,7 @@ class StoreTenantRequest extends FormRequest
             'tenant_name' => 'required|string|unique:tenants,tenant_name|max:255',
             'tenant_contact' => 'required|string|unique:tenants,tenant_contact|regex:/^\+?[0-9]{10,15}$/',
             'tenant_email' => 'required|string|email|unique:tenants,tenant_email|max:255',
-            'tenant_marital_status' => 'required|string|in:Single,Married,Divorced,Widowed',
+            'tenant_marital_status' => 'required|string|in:Single,Married,Widowed,Annulled',
             'tenant_birth_date' => 'required|date|before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
             'tenant_address' => 'required|string|max:500',   
             'tenant_employer' => 'nullable|string|max:255',
