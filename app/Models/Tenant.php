@@ -27,6 +27,10 @@ class Tenant extends Model
         'tenant_account_password'
     ];
 
+    protected $casts = [
+        'tenant_birth_date' => 'date',
+    ];
+
     public function room()
     {
         return $this->belongsTo(Room::class, 'tenant_room_id', 'id');
