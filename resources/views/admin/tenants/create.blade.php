@@ -75,7 +75,6 @@
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
                                         <option value="Widowed">Widowed</option>
-                                        <option value="Separated">Separated</option>
                                         <option value="Annulled">Annulled</option>
                                     </select>
                                 </div>
