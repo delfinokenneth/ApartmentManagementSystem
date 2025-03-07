@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PictureController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\RentPaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,6 +61,25 @@ Route::prefix('admin')->group(function() {
             'show' => 'admin.tenants.show',
             'edit' => 'admin.tenants.edit',
             'destroy' => 'admin.tenants.destroy'
+        ]
+    ]);
+
+    Route::get('/rentpayments/{tenant}/create', [RentPaymentController::class, 'create'])
+    ->name('admin.rentpayments.create_for_tenant');
+    Route::get('/payments', [PaymentController::class, 'index'])
+        ->name('admin.payments.index');
+    Route::get('/payments/{tenant}', [PaymentController::class, 'show'])
+        ->name('admin.payments.show');
+
+    
+    Route::resource('rentpayments', RentPaymentController::class, [
+        'names' => [
+            'index' => 'admin.rentpayments.index',
+            'create' => 'admin.rentpayments.create',
+            'store' => 'admin.rentpayments.store',
+            'show' => 'admin.rentpayments.show',
+            'edit' => 'admin.rentpayments.edit',
+            'destroy' => 'admin.rentpayments.destroy'
         ]
     ]);
 
