@@ -37,10 +37,11 @@
                                             alt="Profile" 
                                             class="rounded-circle img-thumbnail w-25 h-auto">
                                             <p class="fw-bold fs-5 mb-1">{{$tenant->tenant_name}}</p>
+                                            
                                             <p class="text-muted fs-6 mb-0">{{$tenant->room->room_name}}</p>
+                                            
                                         <div class="social-links mt-2">
-                                        <a href="{{$tenant->tenant_facebook_link}}" target="_blank" class="facebook"><i class="bi bi-facebook"></i></a>
-
+                                        <a href="{{$tenant->tenant_facebook_link}}" target="_blank" class="facebook"><i class="bi bi-facebook"></i></a> 
                                         </a>
                                     </div>
                                 </div>
@@ -53,8 +54,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Add Rent Payment Details</h5>
-
-                                    <form class="row g-3" action="{{route('admin.tenants.store')}}" method="post"  enctype="multipart/form-data">
+                                    <form class="row g-3" action="{{route('admin.rentpayments.store')}}" method="post"  enctype="multipart/form-data">
                                         @csrf
                                         <div class="col-md-6">
                                             <label for="payment_date" class="form-label">Payment Date</label>
@@ -90,13 +90,13 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label for="payment_billing_period_end" class="form-label">Period End (Month - Year)</label>
-                                            <input type="month" name="payment_billing_period_end" id="payment_billing_period_end"  onchange="setBillingPeriodStart()"
+                                            <input type="month" name="payment_billing_period_end" id="payment_billing_period_end"  onchange="setBillingPeriodStart()" 
                                                 class="form-control @error('payment_billing_period_end') is-invalid @enderror" disabled required>
                                                 @error('payment_billing_period_end')
                                                     <span class="invalid-feedback">
                                                         {{$message}}
                                                     </span>
-                                                @enderror>
+                                                @enderror
                                         </div>
                                         <div class="col-md-6">
                                             <label for="payment_type" class="form-label">Payment Type</label>
@@ -132,7 +132,9 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="payment_due_date" class="form-label">Due Date</label>
+                                            <label for="payment_due_date" class="form-label">Due Date   
+                                            <span class="text-secondary" style="font-size: 0.9rem;">{{ $tenant->tenant_note }}</span>
+                                            </label>
                                             <input type="date" name="payment_due_date" id="payment_due_date" 
                                                 value="{{old('payment_due_date')}}"
                                                 class="form-control @error('payment_due_date') is-invalid @enderror" required>
@@ -151,7 +153,7 @@
                                         <div class="col-md-6">
                                             <label for="payment_note" class="form-label">Note</label>
                                             <textarea id="payment_note"
-                                                class="form-control @error('payment_note') is-invalid @enderror">{{$tenant->tenant_note}} </textarea>
+                                                class="form-control @error('payment_note') is-invalid @enderror"></textarea>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="text-center mt-3">
@@ -159,8 +161,6 @@
                                                 <button type="reset" class="btn btn-secondary">Reset</button>
                                             </div>
                                         </div>
-
-
                                     </form>
                                     <!-- End Multi Columns Form -->
                                 </div>
