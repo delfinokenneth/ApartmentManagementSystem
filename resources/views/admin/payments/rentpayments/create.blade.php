@@ -56,6 +56,8 @@
                                     <h5 class="card-title">Add Rent Payment Details</h5>
                                     <form class="row g-3" action="{{route('admin.rentpayments.store')}}" method="post"  enctype="multipart/form-data">
                                         @csrf
+                                        <input type="text" name="tenant_id" id="tenant_id" value="{{$tenant->id}}" hidden>
+                                        <input type="text" name="tenant_room_id" id="tenant_room_id" value="{{$tenant->room->id}}" hidden>
                                         <div class="col-md-6">
                                             <label for="payment_date" class="form-label">Payment Date</label>
                                             <input type="date" name="payment_date" id="payment_date" 
@@ -81,7 +83,7 @@
                                         <div class="col-md-6">
                                             <label for="payment_billing_period_start" class="form-label">Period Start (Month - Year)</label>
                                             <input type="month" name="payment_billing_period_start" id="payment_billing_period_start" 
-                                                class="form-control @error('payment_billing_period_start') is-invalid @enderror" disabled required>
+                                                class="form-control @error('payment_billing_period_start') is-invalid @enderror" readonly required>
                                                 @error('payment_billing_period_start')
                                                     <span class="invalid-feedback">
                                                         {{$message}}
@@ -91,7 +93,7 @@
                                         <div class="col-md-6">
                                             <label for="payment_billing_period_end" class="form-label">Period End (Month - Year)</label>
                                             <input type="month" name="payment_billing_period_end" id="payment_billing_period_end"  onchange="setBillingPeriodStart()" 
-                                                class="form-control @error('payment_billing_period_end') is-invalid @enderror" disabled required>
+                                                class="form-control @error('payment_billing_period_end') is-invalid @enderror" required>
                                                 @error('payment_billing_period_end')
                                                     <span class="invalid-feedback">
                                                         {{$message}}
@@ -100,7 +102,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label for="payment_type" class="form-label">Payment Type</label>
-                                            <select class="form-select" id="payment_type"  onchange="toggleFields()" required>
+                                            <select class="form-select" id="payment_type" name="payment_type" onchange="toggleFields()" required>
                                                 <option value="Cash" selected>Cash</option>
                                                 <option value="GCash">GCash</option>
                                                 <option value="Maya">Maya</option>
@@ -125,7 +127,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label for="payment_status" class="form-label">Status</label>
-                                            <select class="form-select" id="payment_status">
+                                            <select class="form-select" id="payment_status" name="payment_status">
                                                 <option value="Pending" selected>Pending</option>
                                                 <option value="Paid">Paid</option>
                                                 <option value="Overdue">Overdue</option>
@@ -147,7 +149,7 @@
                                         <div class="col-md-6">
                                             <label for="payment_collected_by_id" class="form-label">Collected By</label>
                                             <select class="form-select" id="payment_collected_by_id" required>
-                                                <option value="Kenneth Delfino" selected>Kenneth Delfino</option>
+                                                <option value="1" selected>Kenneth Delfino</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
