@@ -137,7 +137,7 @@
                                             <label for="payment_due_date" class="form-label">Due Date   
                                             <span class="text-secondary" style="font-size: 0.9rem;">{{ $tenant->tenant_note }}</span>
                                             </label>
-                                            <input type="date" name="payment_due_date" id="payment_due_date" 
+                                            <input type="date" name="payment_due_date" id="payment_due_date" disabled
                                                 value="{{old('payment_due_date')}}"
                                                 class="form-control @error('payment_due_date') is-invalid @enderror" required>
                                                 @error('payment_due_date')
@@ -181,6 +181,37 @@
         if (paymentDate) {
             paymentDate.value = new Date().toISOString().split('T')[0];
         }
+
+        const billingPeriodEndInput = document.getElementById('payment_billing_period_end');
+        const dueDateInput = document.getElementById('payment_due_date');
+
+        // Ensure Payment Due Date is set to the first day of the selected Billing Period End month
+        billingPeriodEndInput.addEventListener('input', () => {
+        const billingPeriodEnd = billingPeriodEndInput.value;
+
+        if (billingPeriodEnd) {
+          // Convert MM-YYYY to YYYY-MM-01 format for the due date
+        dueDateInput.value = `${billingPeriodEnd}-01`;
+        dueDateInput.disabled = false;
+        } else {
+        dueDateInput.value = '';
+        dueDateInput.disabled = true;
+        }
+    });
+
+      // Restrict due date picker to the specific month of the billing period end
+        dueDateInput.addEventListener('focus', () => {
+        const billingPeriodEnd = billingPeriodEndInput.value;
+        if (billingPeriodEnd) {
+            const [year, month] = billingPeriodEnd.split('-');
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 0); // Last day of the month
+
+            dueDateInput.min = startDate.toISOString().split('T')[0];
+            dueDateInput.max = endDate.toISOString().split('T')[0];
+        }
+    });
+
     });
 
     function setBillingPeriodStart() {
