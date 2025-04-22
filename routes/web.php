@@ -64,14 +64,6 @@ Route::prefix('admin')->group(function() {
         ]
     ]);
 
-    Route::get('/rentpayments/{tenant}/create', [RentPaymentController::class, 'create'])
-    ->name('admin.rentpayments.create_for_tenant');
-    Route::get('/payments', [PaymentController::class, 'index'])
-        ->name('admin.payments.index');
-    Route::get('/payments/{tenant}', [PaymentController::class, 'show'])
-        ->name('admin.payments.show');
-
-    
     Route::resource('rentpayments', RentPaymentController::class, [
         'names' => [
             'index' => 'admin.rentpayments.index',
@@ -82,6 +74,13 @@ Route::prefix('admin')->group(function() {
             'destroy' => 'admin.rentpayments.destroy'
         ]
     ]);
+
+    Route::get('/rentpayments/{tenant}/create', [RentPaymentController::class, 'create'])
+    ->name('admin.rentpayments.create_for_tenant');
+    Route::get('/payments', [PaymentController::class, 'index'])
+        ->name('admin.payments.index');
+    Route::get('/payments/{tenant}', [PaymentController::class, 'show'])
+        ->name('admin.payments.show');
 
 // Separate update routes for Edit Profile and Edit Account
 Route::put('tenants/{tenant}/profile', [TenantController::class, 'updateProfile'])->name('admin.tenants.updateProfile');
