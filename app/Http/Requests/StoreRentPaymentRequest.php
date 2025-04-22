@@ -33,7 +33,7 @@ class StoreRentPaymentRequest extends FormRequest
             'payment_type' => 'required|string|in:Cash,GCash,Maya,Others',
             'payment_reference_number' => 'nullable|string|max:255',
             'payment_status' => 'required|string|in:Paid,Overdue,Pending',
-            'payment_receipt_url' => 'nullable|url|max:2048',
+            'payment_receipt_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'payment_due_date' => ['required','date',
                 function ($attribute, $value, $fail) {
                     if (date('Y-m', strtotime($value)) !== date('Y-m', strtotime($this->payment_billing_period_end))) {

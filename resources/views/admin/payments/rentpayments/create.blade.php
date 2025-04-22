@@ -122,9 +122,16 @@
                                                 @enderror
                                         </div>
                                         <div class="col-md-6">
-                                            <label for="uploadReceipt" class="form-label">Upload Receipt</label>
-                                            <input type="file" class="form-control" id="uploadReceipt">
+                                            <label for="payment_receipt_url" class="form-label">Image</label>
+                                            <input type="file" name="payment_receipt_url" id="payment_receipt_url" accept="image/*"
+                                                class="form-control @error('payment_receipt_url') is-invalid @enderror" disabled>
+                                                @error('payment_receipt_url')
+                                                <span class="invalid-feedback">
+                                                    {{ $message }}
+                                                </span>
+                                                @enderror
                                         </div>
+
                                         <div class="col-md-6">
                                             <label for="payment_status" class="form-label">Status</label>
                                             <select class="form-select" id="payment_status" name="payment_status">
@@ -234,14 +241,17 @@
     function toggleFields() {
         const paymentType = document.getElementById('payment_type').value;
         const referenceNumber = document.getElementById('payment_reference_number');
+        const receiptUrl = document.getElementById('payment_receipt_url');
 
         if (paymentType != 'Cash') {
             // Clear value and disable if "Cash" is selected
             referenceNumber.value = '';
             referenceNumber.disabled = false;
+            receiptUrl.disabled = false;
         } else {
             // Enable fields for other payment types
             referenceNumber.disabled = true;
+            receiptUrl.disabled = true;
         }
     }
 </script>
